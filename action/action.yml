@@ -36,12 +36,6 @@ runs:
       with:
         node-version: '22'
 
-    - name: Install action dependencies
-      shell: bash
-      run: |
-        cd "${{ github.action_path }}"
-        npm install --ignore-scripts
-
     - name: Collect repository sources
       id: collect
       shell: bash
