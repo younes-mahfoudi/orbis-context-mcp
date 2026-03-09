@@ -41,7 +41,7 @@
         {
             "id": "udoc-framework",
             "owner": "dedalus-cis4u",
-            "repo": "udoc-mcp",
+            "repo": "udoc-framework",
             "description": "UDoc framework - widgets, XML components, Angular frontend architecture",
             "tags": [
                 "framework",
