@@ -1,0 +1,15 @@
+{
+    "servers": {
+        "orbis-context": {
+            "type": "stdio",
+            "command": "node",
+            "args": [
+                "${workspaceFolder}/dist/index.js"
+            ],
+            "env": {
+                "GITHUB_TOKEN": "${env:GITHUB_TOKEN}",
+                "TRANSPORT": "stdio"
+            }
+        }
+    }
+}

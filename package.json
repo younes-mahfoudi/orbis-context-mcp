@@ -1,0 +1,28 @@
+{
+    "name": "@orbis/context-mcp",
+    "version": "1.0.0",
+    "description": "MCP server aggregating LLM context from all Orbis solution repositories",
+    "type": "module",
+    "main": "dist/index.js",
+    "bin": {
+        "orbis-context-mcp": "dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "dev": "tsc --watch & node --watch dist/index.js"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.27.1",
+        "@octokit/rest": "^21.1.1",
+        "express": "^5.2.1"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.6",
+        "@types/node": "^22.15.0",
+        "typescript": "^5.9.3"
+    },
+    "engines": {
+        "node": ">=22"
+    }
+}

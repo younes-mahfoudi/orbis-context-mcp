@@ -1,0 +1,55 @@
+{
+    "repositories": [
+        {
+            "id": "orbis-4u",
+            "owner": "dedalus-cis4u",
+            "repo": "orbis-4u",
+            "description": "ORBIS 4U application - bridges ORBIS Services to ORBIS U apps via REST API",
+            "tags": [
+                "backend",
+                "java",
+                "rest-api",
+                "orbis-server",
+                "war"
+            ]
+        },
+        {
+            "id": "orbis-events-4u-stack",
+            "owner": "dedalus-cis4u",
+            "repo": "orbis-events-4u-stack",
+            "description": "Event bridging between Orbis Events and Kafka via plugin-based processors",
+            "tags": [
+                "events",
+                "kafka",
+                "spi",
+                "processors",
+                "messaging"
+            ]
+        },
+        {
+            "id": "orbis-security",
+            "owner": "dedalus-cis4u",
+            "repo": "orbis-security",
+            "description": "Security and identity management for Orbis (Keycloak integration)",
+            "tags": [
+                "security",
+                "keycloak",
+                "auth",
+                "identity"
+            ]
+        },
+        {
+            "id": "udoc-framework",
+            "owner": "dedalus-cis4u",
+            "repo": "udoc-mcp",
+            "description": "UDoc framework - widgets, XML components, Angular frontend architecture",
+            "tags": [
+                "framework",
+                "frontend",
+                "widgets",
+                "xml",
+                "angular"
+            ]
+        }
+    ]
+}

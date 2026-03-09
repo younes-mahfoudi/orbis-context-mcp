@@ -1,0 +1,81 @@
+name: 'Generate LLM.txt'
+description: 'Generate an LLM context documentation file (llm.txt) for a repository using GitHub Models API'
+author: 'Dedalus CIS4U'
+
+inputs:
+  github-token:
+    description: 'GitHub token with repo read access and GitHub Models API access'
+    required: true
+  model:
+    description: 'GitHub Models model to use for generation'
+    required: false
+    default: 'gpt-4o'
+  output-path:
+    description: 'Output file path relative to repo root'
+    required: false
+    default: 'docs/llm.txt'
+  extra-context-paths:
+    description: 'Additional file glob patterns to include as context (comma-separated)'
+    required: false
+    default: ''
+  commit-changes:
+    description: 'Whether to auto-commit the generated file'
+    required: false
+    default: 'true'
+
+outputs:
+  llm-txt-path:
+    description: 'Path to the generated llm.txt file'
+    value: ${{ steps.generate.outputs.llm-txt-path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Install action dependencies
+      shell: bash
+      run: |
+        cd "${{ github.action_path }}"
+        npm ci --ignore-scripts
+
+    - name: Collect repository sources
+      id: collect
+      shell: bash
+      env:
+        EXTRA_CONTEXT_PATHS: ${{ inputs.extra-context-paths }}
+      run: |
+        bash "${{ github.action_path }}/scripts/collect-sources.sh" > "$RUNNER_TEMP/collected-sources.txt"
+        echo "sources-file=$RUNNER_TEMP/collected-sources.txt" >> "$GITHUB_OUTPUT"
+
+    - name: Generate LLM.txt
+      id: generate
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        MODEL: ${{ inputs.model }}
+        OUTPUT_PATH: ${{ inputs.output-path }}
+        SOURCES_FILE: ${{ steps.collect.outputs.sources-file }}
+        SYSTEM_PROMPT_PATH: ${{ github.action_path }}/prompts/system-prompt.md
+      run: |
+        node "${{ github.action_path }}/scripts/generate-llm-txt.mjs"
+        echo "llm-txt-path=$OUTPUT_PATH" >> "$GITHUB_OUTPUT"
+
+    - name: Commit changes
+      if: ${{ inputs.commit-changes == 'true' }}
+      shell: bash
+      env:
+        OUTPUT_PATH: ${{ inputs.output-path }}
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add "$OUTPUT_PATH"
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "docs: update llm.txt [skip ci]"
+          git push
+        fi
