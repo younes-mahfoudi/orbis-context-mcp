@@ -11,13 +11,13 @@ const SOURCES_FILE = process.env.SOURCES_FILE;
 const SYSTEM_PROMPT_PATH = process.env.SYSTEM_PROMPT_PATH;
 
 if (!GITHUB_TOKEN) {
-  console.error('Error: GITHUB_TOKEN is required');
-  process.exit(1);
+    console.error('Error: GITHUB_TOKEN is required');
+    process.exit(1);
 }
 
 if (!SOURCES_FILE) {
-  console.error('Error: SOURCES_FILE is required');
-  process.exit(1);
+    console.error('Error: SOURCES_FILE is required');
+    process.exit(1);
 }
 
 // Read inputs
@@ -28,38 +28,38 @@ console.log(`Source content size: ${sources.length} chars`);
 console.log(`Using model: ${MODEL}`);
 console.log('Calling GitHub Models API...');
 
-const response = await fetch('https://models.github.ai/chat/completions', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${GITHUB_TOKEN}`,
-  },
-  body: JSON.stringify({
-    model: MODEL,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      {
-        role: 'user',
-        content: `Generate the llm.txt documentation for the following repository. Here is the collected source material:\n\n${sources}`,
-      },
-    ],
-    temperature: 0.3,
-    max_tokens: 16000,
-  }),
+const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+    },
+    body: JSON.stringify({
+        model: MODEL,
+        messages: [
+            { role: 'system', content: systemPrompt },
+            {
+                role: 'user',
+                content: `Generate the llm.txt documentation for the following repository. Here is the collected source material:\n\n${sources}`,
+            },
+        ],
+        temperature: 0.3,
+        max_tokens: 16000,
+    }),
 });
 
 if (!response.ok) {
-  const errorBody = await response.text();
-  console.error(`API call failed: ${response.status} ${response.statusText}`);
-  console.error(errorBody);
-  process.exit(1);
+    const errorBody = await response.text();
+    console.error(`API call failed: ${response.status} ${response.statusText}`);
+    console.error(errorBody);
+    process.exit(1);
 }
 
 const data = await response.json();
 const content = data.choices?.[0]?.message?.content;
 if (!content) {
-  console.error('No content in API response');
-  process.exit(1);
+    console.error('No content in API response');
+    process.exit(1);
 }
 
 // Write output
