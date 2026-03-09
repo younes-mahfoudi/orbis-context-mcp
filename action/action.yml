@@ -40,7 +40,7 @@ runs:
       shell: bash
       run: |
         cd "${{ github.action_path }}"
-        npm ci --ignore-scripts
+        npm install --ignore-scripts
 
     - name: Collect repository sources
       id: collect
