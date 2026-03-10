@@ -21,14 +21,25 @@ if (!SOURCES_FILE) {
 }
 
 // Read inputs
-const sources = readFileSync(SOURCES_FILE, 'utf-8');
+let sources = readFileSync(SOURCES_FILE, 'utf-8');
 const systemPrompt = readFileSync(SYSTEM_PROMPT_PATH, 'utf-8');
+
+// Truncate if too large (keep under ~30K tokens)
+const MAX_SOURCE_CHARS = 120000;
+if (sources.length > MAX_SOURCE_CHARS) {
+  console.log(`Truncating sources from ${sources.length} to ${MAX_SOURCE_CHARS} chars`);
+  sources = sources.slice(0, MAX_SOURCE_CHARS) + '\n... [truncated]';
+}
 
 console.log(`Source content size: ${sources.length} chars`);
 console.log(`Using model: ${MODEL}`);
 console.log('Calling GitHub Models API...');
 
+const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 300_000); // 5 min timeout
+
 const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+  signal: controller.signal,
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -47,6 +58,8 @@ const response = await fetch('https://models.inference.ai.azure.com/chat/complet
         max_tokens: 16000,
     }),
 });
+
+clearTimeout(timeout);
 
 if (!response.ok) {
     const errorBody = await response.text();

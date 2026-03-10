@@ -3,8 +3,8 @@
 # Outputs structured text to stdout
 set -euo pipefail
 
-MAX_FILE_SIZE=50000  # Max chars per file
-MAX_TOTAL_SIZE=400000  # ~100K tokens budget
+MAX_FILE_SIZE=30000  # Max chars per file
+MAX_TOTAL_SIZE=120000  # ~30K tokens budget
 
 total_chars=0
 
