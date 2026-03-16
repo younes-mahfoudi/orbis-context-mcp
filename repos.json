@@ -15,8 +15,8 @@
         },
         {
             "id": "orbis-events-4u-stack",
-            "owner": "dedalus-cis4u",
-            "repo": "orbis-events-4u-stack",
+            "owner": "younes-mahfoudi",
+            "repo": "orbis-domain-test",
             "description": "Event bridging between Orbis Events and Kafka via plugin-based processors",
             "tags": [
                 "events",
@@ -40,15 +40,15 @@
         },
         {
             "id": "udoc-framework",
-            "owner": "dedalus-cis4u",
-            "repo": "udoc-framework",
+            "owner": "younes-mahfoudi",
+            "repo": "orbis-domain-test-2",
             "description": "UDoc framework - widgets, XML components, Angular frontend architecture",
             "tags": [
                 "framework",
-                "frontend",
                 "widgets",
                 "xml",
-                "angular"
+                "udoc",
+                "composer"
             ]
         }
     ]
