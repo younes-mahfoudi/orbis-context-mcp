@@ -82,6 +82,37 @@ Add to your workflow (requires a prior `actions/checkout` step):
     exclude-patterns: 'tests/*,docs/*'
 ```
 
+<details>
+<summary>Full workflow example</summary>
+
+```yaml
+name: Generate LLM.txt
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-llm-txt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📝 Generate LLM.txt
+        uses: dedalus-cis4u/generate-llm-txt@main
+        with:
+          output-path: docs/llm.txt
+          exclude-patterns: 'tests/*,*.test.*,dist/*,node_modules/*'
+          commit-changes: 'true'
+```
+
+</details>
+
 ### Docker
 
 ```bash
@@ -122,6 +153,7 @@ docker run -e GITHUB_TOKEN=ghp_xxx -p 3200:3200 orbis-context-mcp
 
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
+| `github-token` | No | `${{ github.token }}` | GitHub token for pushing commits |
 | `output-path` | No | `docs/llm.txt` | Output file path |
 | `include-patterns` | No | — | File glob patterns to include (comma-separated) |
 | `exclude-patterns` | No | — | File glob patterns to exclude (comma-separated) |

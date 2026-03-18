@@ -3,6 +3,10 @@ description: 'Generate an LLM context documentation file (llm.txt) for a reposit
 author: 'Dedalus CIS4U'
 
 inputs:
+  github-token:
+    description: 'GitHub token for pushing commits (defaults to the automatic GITHUB_TOKEN)'
+    required: false
+    default: ${{ github.token }}
   output-path:
     description: 'Output file path relative to repo root'
     required: false
@@ -71,7 +75,9 @@ runs:
       shell: bash
       env:
         OUTPUT_PATH: ${{ inputs.output-path }}
+        GH_TOKEN: ${{ inputs.github-token }}
       run: |
+        git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add "$OUTPUT_PATH"
