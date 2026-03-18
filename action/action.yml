@@ -1,21 +1,18 @@
 name: 'Generate LLM.txt'
-description: 'Generate an LLM context documentation file (llm.txt) for a repository using GitHub Models API'
+description: 'Generate an LLM context documentation file (llm.txt) for a repository using gitingest'
 author: 'Dedalus CIS4U'
 
 inputs:
-  github-token:
-    description: 'GitHub token with repo read access and GitHub Models API access'
-    required: true
-  model:
-    description: 'GitHub Models model to use for generation'
-    required: false
-    default: 'gpt-4o'
   output-path:
     description: 'Output file path relative to repo root'
     required: false
     default: 'docs/llm.txt'
-  extra-context-paths:
-    description: 'Additional file glob patterns to include as context (comma-separated)'
+  include-patterns:
+    description: 'File glob patterns to include (comma-separated, e.g. "*.py,*.ts")'
+    required: false
+    default: ''
+  exclude-patterns:
+    description: 'File glob patterns to exclude (comma-separated, e.g. "tests/*,docs/*")'
     required: false
     default: ''
   commit-changes:
@@ -31,32 +28,43 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Setup Python
+      uses: actions/setup-python@v5
       with:
-        node-version: '22'
+        python-version: '3.12'
 
-    - name: Collect repository sources
-      id: collect
+    - name: Install gitingest
       shell: bash
-      env:
-        EXTRA_CONTEXT_PATHS: ${{ inputs.extra-context-paths }}
-      run: |
-        bash "${{ github.action_path }}/scripts/collect-sources.sh" > "$RUNNER_TEMP/collected-sources.txt"
-        echo "sources-file=$RUNNER_TEMP/collected-sources.txt" >> "$GITHUB_OUTPUT"
+      run: pip install gitingest
 
     - name: Generate LLM.txt
       id: generate
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-        MODEL: ${{ inputs.model }}
         OUTPUT_PATH: ${{ inputs.output-path }}
-        SOURCES_FILE: ${{ steps.collect.outputs.sources-file }}
-        SYSTEM_PROMPT_PATH: ${{ github.action_path }}/prompts/system-prompt.md
+        INCLUDE_PATTERNS: ${{ inputs.include-patterns }}
+        EXCLUDE_PATTERNS: ${{ inputs.exclude-patterns }}
       run: |
-        node "${{ github.action_path }}/scripts/generate-llm-txt.mjs"
+        ARGS=(. --output "$OUTPUT_PATH")
+
+        if [[ -n "$INCLUDE_PATTERNS" ]]; then
+          IFS=',' read -ra PATTERNS <<< "$INCLUDE_PATTERNS"
+          for pattern in "${PATTERNS[@]}"; do
+            ARGS+=(--include-pattern "$(echo "$pattern" | xargs)")
+          done
+        fi
+
+        if [[ -n "$EXCLUDE_PATTERNS" ]]; then
+          IFS=',' read -ra PATTERNS <<< "$EXCLUDE_PATTERNS"
+          for pattern in "${PATTERNS[@]}"; do
+            ARGS+=(--exclude-pattern "$(echo "$pattern" | xargs)")
+          done
+        fi
+
+        mkdir -p "$(dirname "$OUTPUT_PATH")"
+        gitingest "${ARGS[@]}"
         echo "llm-txt-path=$OUTPUT_PATH" >> "$GITHUB_OUTPUT"
+        echo "Generated llm.txt at $OUTPUT_PATH ($(wc -c < "$OUTPUT_PATH") bytes)"
 
     - name: Commit changes
       if: ${{ inputs.commit-changes == 'true' }}

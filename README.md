@@ -17,8 +17,8 @@ A TypeScript MCP server that:
 ### 2. GitHub Action (`action/`)
 
 A reusable composite GitHub Action that:
-- Collects repository sources (README, copilot-instructions, pom.xml, OpenAPI specs, key source files)
-- Calls GitHub Models API to generate a comprehensive `docs/llm.txt`
+- Uses [gitingest](https://github.com/coderamp-labs/gitingest) to generate a prompt-friendly text digest of the repository
+- Produces a comprehensive `docs/llm.txt` with file tree and source contents
 - Auto-commits the file to the repository
 
 ## MCP Tools
@@ -73,13 +73,13 @@ export GITHUB_TOKEN=ghp_your_token_here
 
 ### GitHub Action
 
-Add to your release workflow:
+Add to your workflow (requires a prior `actions/checkout` step):
 
 ```yaml
 - name: 📝 Generate LLM.txt
   uses: dedalus-cis4u/generate-llm-txt@main
   with:
-    github-token: ${{ secrets.PAT_TOKEN }}
+    exclude-patterns: 'tests/*,docs/*'
 ```
 
 ### Docker
@@ -122,8 +122,7 @@ docker run -e GITHUB_TOKEN=ghp_xxx -p 3200:3200 orbis-context-mcp
 
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `github-token` | Yes | — | Token with repo + models access |
-| `model` | No | `gpt-4o` | GitHub Models model |
 | `output-path` | No | `docs/llm.txt` | Output file path |
-| `extra-context-paths` | No | — | Extra file globs (comma-separated) |
+| `include-patterns` | No | — | File glob patterns to include (comma-separated) |
+| `exclude-patterns` | No | — | File glob patterns to exclude (comma-separated) |
 | `commit-changes` | No | `true` | Auto-commit generated file |
