@@ -7,9 +7,22 @@
                 "${workspaceFolder}/dist/index.js"
             ],
             "env": {
-                "GITHUB_TOKEN": "${env:GITHUB_TOKEN}",
+                "GITHUB_TOKEN": "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",
                 "TRANSPORT": "stdio"
             }
+        },
+        "cto_mcp_openapi": {
+            "url": "http://localhost:8000/openapi/mcp",
+            "type": "http"
+        },
+        "cto_mcp_docs": {
+            "url": "http://localhost:8000/docs/mcp",
+            "type": "http"
+        },
+        "cto_mcp_u_quarkus": {
+            "url": "http://localhost:8000/u_quarkus/mcp",
+            "type": "http"
         }
-    }
+    },
+    "inputs": []
 }
